@@ -45,11 +45,16 @@ func InitDatabase(conf config.Configer) *gorp.DbMap {
 	}
 
 	hashed := HashPassword(conf.String("admin::password"))
-	_, err = dbmap.Exec("INSERT INTO person VALUES('0',?,?,?,?)",
+	_, err = dbmap.Exec("INSERT INTO person VALUES('-1',?,?,?,?)",
 		conf.String("admin::email"),
 		hashed,
 		conf.String("admin::name_first"),
 		conf.String("admin::name_last"))
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	_, err = dbmap.Exec("UPDATE person set person_id='0' WHERE person_id='-1'")
 	if err != nil {
 		log.Fatalln(err)
 	}
