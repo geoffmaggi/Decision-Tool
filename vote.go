@@ -42,7 +42,7 @@ func HVoteCreate(c *gin.Context) {
 	}
 
 	var b Ballot
-	err = dbmap.SelectOne(&b, "select * from ballot where ballot_id=$1", bid)
+	err = dbmap.SelectOne(&b, "select * from ballot where ballot_id=?", bid)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
@@ -86,14 +86,14 @@ func HVoteUpdate(c *gin.Context) {
 	}
 
 	var cri Criterion
-	err = dbmap.SelectOne(&cri, "SELECT * FROM criterion WHERE criterion_id=$1", cid)
+	err = dbmap.SelectOne(&cri, "SELECT * FROM criterion WHERE criterion_id=?", cid)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to update vote for ballot %d and criterion %d", bid, cid)})
 		return
 	}
 
-	_, err = dbmap.Exec("UPDATE vote SET weight=$1 WHERE criterion_id=$2 and ballot_id=$3 and alternative_id=$4", weight, cid, bid, aid)
+	_, err = dbmap.Exec("UPDATE vote SET weight=? WHERE criterion_id=? and ballot_id=? and alternative_id=?", weight, cid, bid, aid)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to update vote for ballot %d and criterion %d", bid, cid)})
@@ -145,7 +145,7 @@ func HVotesBallotList(c *gin.Context) {
 	}
 
 	var vs []Vote
-	_, err = dbmap.Select(&vs, "select * from vote WHERE ballot_id=$1", bid)
+	_, err = dbmap.Select(&vs, "select * from vote WHERE ballot_id=?", bid)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
@@ -157,7 +157,7 @@ func HVotesBallotList(c *gin.Context) {
 
 // Destroy removes a vote from the database
 func (v *Vote) Destroy() error {
-	_, err := dbmap.Exec("DELETE FROM vote WHERE ballot_id=$1 and criterion_id=$2 and alternative_id=$3",
+	_, err := dbmap.Exec("DELETE FROM vote WHERE ballot_id=? and criterion_id=? and alternative_id=?",
 		v.BallotID, v.CriterionID, v.AlternativeID)
 	if err != nil {
 		return err
@@ -173,7 +173,7 @@ func (v *Vote) Destroy() error {
 func (v *Vote) Save() error {
 
 	// No duplicate votes
-	n, _ := dbmap.SelectInt("select count(*) from vote where ballot_id=$1 and criterion_id=$2 and alternative_id=$3",
+	n, _ := dbmap.SelectInt("select count(*) from vote where ballot_id=? and criterion_id=? and alternative_id=?",
 		v.BallotID, v.CriterionID, v.AlternativeID)
 	if n >= 1 {
 		return fmt.Errorf("vote %#v already exists", v)
@@ -181,7 +181,7 @@ func (v *Vote) Save() error {
 
 	// See if there's a criterion that this vote belongs to
 	var cri Criterion
-	err := dbmap.SelectOne(&cri, "select * from criterion where criterion_id=$1",
+	err := dbmap.SelectOne(&cri, "select * from criterion where criterion_id=?",
 		v.CriterionID)
 	if err != nil {
 		return fmt.Errorf("criterion %d does not exist, can't create a vote without an owner", v.CriterionID)
@@ -189,7 +189,7 @@ func (v *Vote) Save() error {
 
 	// See if there's a ballot that this vote belongs to
 	var b Ballot
-	err = dbmap.SelectOne(&b, "select * from ballot where ballot_id=$1",
+	err = dbmap.SelectOne(&b, "select * from ballot where ballot_id=?",
 		v.BallotID)
 	if err != nil {
 		return fmt.Errorf("ballot %d does not exists, can't create a vote without an owner", v.BallotID)
@@ -197,7 +197,7 @@ func (v *Vote) Save() error {
 
 	// See if there's an alternative that this vote belongs to
 	var alt Alternative
-	err = dbmap.SelectOne(&alt, "select * from alternative where alternative_id=$1",
+	err = dbmap.SelectOne(&alt, "select * from alternative where alternative_id=?",
 		v.AlternativeID)
 	if err != nil {
 		return fmt.Errorf("alternative %d does not exists, can't create a vote that doesn't belong to an alternative",

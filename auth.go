@@ -28,7 +28,7 @@ func HAuthLogin(c *gin.Context) {
 	// Find the user in the database
 	hashed := HashPassword(ar.Password)
 	var p Person
-	err = dbmap.SelectOne(&p, "select * from person where email=$1 and pw_hash=$2", ar.Email, hashed)
+	err = dbmap.SelectOne(&p, "select * from person where email=? and pw_hash=?", ar.Email, hashed)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Wrong email or password"})
 		return

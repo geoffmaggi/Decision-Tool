@@ -113,7 +113,7 @@ func HBallotCreateSilent(c *gin.Context) {
 // invitations
 func GenerateInviteTemplate(b Ballot) (title string, body string) {
 	title = fmt.Sprintf("%s's ballot", b.Name)
-	body = fmt.Sprintf("<html><body>Hello %s, you have been invited to participate in a decision <a href=\"http://localhost:9999/decision/%d/ballot/%d/login/%s\">click here to vote</a>.</body></html>",
+	body = fmt.Sprintf("<html><body>Hello %s, you have been invited to participate in a decision <a href=\"http://laxer.net/decision/%d/ballot/%d/login/%s\">click here to vote</a>.</body></html>",
 		b.Name, b.DecisionID, b.BallotID, b.Secret)
 	return title, body
 }
@@ -126,7 +126,7 @@ func HBallotInvite(c *gin.Context) {
 
 	var b Ballot
 	err := dbmap.SelectOne(&b,
-		"SELECT * FROM ballot where ballot_id=$1 and decision_id=$2", bid, did)
+		"SELECT * FROM ballot where ballot_id=? and decision_id=?", bid, did)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to find ballot %v for decision %v", bid, did)})
@@ -167,7 +167,7 @@ func HBallotUpdate(c *gin.Context) {
 	}
 
 	var b Ballot
-	err = dbmap.SelectOne(&b, "SELECT * FROM ballot WHERE decision_id=$1 and ballot_id=$2", did, bid)
+	err = dbmap.SelectOne(&b, "SELECT * FROM ballot WHERE decision_id=? and ballot_id=?", did, bid)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("ballot %d for decision %d not found", bid, did)})
@@ -236,7 +236,7 @@ func HBallotInfo(c *gin.Context) {
 	did := c.Param("decision_id")
 	bid := c.Param("ballot_id")
 	var ballot Ballot
-	err := dbmap.SelectOne(&ballot, "SELECT * FROM ballot where ballot_id=$1 and decision_id=$2", bid, did)
+	err := dbmap.SelectOne(&ballot, "SELECT * FROM ballot where ballot_id=? and decision_id=?", bid, did)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("Unable to find ballot %v for decision %v", bid, did)})
 		return
@@ -256,7 +256,7 @@ func (b *Ballot) Destroy() error {
 
 	// Remove votes beloning to this ballot
 	var votes []Vote
-	_, _ = dbmap.Select(&votes, "SELECT * FROM vote WHERE ballot_id=$1", b.BallotID)
+	_, _ = dbmap.Select(&votes, "SELECT * FROM vote WHERE ballot_id=?", b.BallotID)
 	for _, v := range votes {
 		if err := v.Destroy(); err != nil {
 			return err
@@ -265,7 +265,7 @@ func (b *Ballot) Destroy() error {
 
 	// Remove ratings belonging to this ballot
 	var ratings []Rating
-	_, _ = dbmap.Select(&ratings, "SELECT * FROM rating WHERE ballot_id=$1", b.BallotID)
+	_, _ = dbmap.Select(&ratings, "SELECT * FROM rating WHERE ballot_id=?", b.BallotID)
 	for _, r := range ratings {
 		if err := r.Destroy(); err != nil {
 			return err
@@ -291,7 +291,7 @@ func HBallotLogin(c *gin.Context) {
 
 	// Find the ballot
 	var ballot Ballot
-	err = dbmap.SelectOne(&ballot, "SELECT * FROM ballot where ballot_id=$1 and decision_id=$2", bid, did)
+	err = dbmap.SelectOne(&ballot, "SELECT * FROM ballot where ballot_id=? and decision_id=?", bid, did)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("Unable to find ballot %v for decision %v", bid, did)})
 		return
@@ -328,7 +328,7 @@ func HBallotLogin(c *gin.Context) {
 	http.SetCookie(c.Writer, &bcookie)
 	http.SetCookie(c.Writer, &dcookie)
 
-	c.Redirect(http.StatusSeeOther, "http://localhost:9999/ballot.html")
+	c.Redirect(http.StatusSeeOther, "http://laxer.net/ballot.html")
 }
 
 // HBallotWhoami returns the current
@@ -366,7 +366,7 @@ func HBallotAllInfo(c *gin.Context) {
 	bid := c.Param("ballot_id")
 
 	var ballot Ballot
-	err := dbmap.SelectOne(&ballot, "SELECT * FROM ballot where ballot_id=$1 and decision_id=$2", bid, did)
+	err := dbmap.SelectOne(&ballot, "SELECT * FROM ballot where ballot_id=? and decision_id=?", bid, did)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to find ballot %v for decision %v", bid, did)})
@@ -381,7 +381,7 @@ func HBallotAllInfo(c *gin.Context) {
 	ai.URLDecision = fmt.Sprintf("/decision/%s", did)
 
 	// Get the votes for this ballot
-	_, err = dbmap.Select(&ai.Votes, "SELECT * FROM vote where ballot_id=$1", bid)
+	_, err = dbmap.Select(&ai.Votes, "SELECT * FROM vote where ballot_id=?", bid)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to find votes for ballot %v", bid)})
@@ -389,7 +389,7 @@ func HBallotAllInfo(c *gin.Context) {
 	}
 
 	// Get the ratings for this ballot
-	_, err = dbmap.Select(&ai.Ratings, "SELECT * FROM rating where ballot_id=$1", bid)
+	_, err = dbmap.Select(&ai.Ratings, "SELECT * FROM rating where ballot_id=?", bid)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to find ratings for ballot %v", bid)})
@@ -405,7 +405,7 @@ func (b *Ballot) Save() error {
 
 	// Check if decision exists or not
 	var d Decision
-	err := dbmap.SelectOne(&d, "select * from decision where decision_id=$1", b.DecisionID)
+	err := dbmap.SelectOne(&d, "select * from decision where decision_id=?", b.DecisionID)
 	if err != nil {
 		return fmt.Errorf("Decision %d does not exists, can't create ballot without a decision", b.DecisionID)
 	}
@@ -417,7 +417,7 @@ func (b *Ballot) Save() error {
 	// Now recreate the hash correctly for
 	// the current ballot after knowing
 	// the id
-	if err := dbmap.SelectOne(b, "select * from ballot where ballot_id=(select max(ballot_id) from ballot) and email=$1", b.Email); err != nil {
+	if err := dbmap.SelectOne(b, "select * from ballot where ballot_id=(select max(ballot_id) from ballot) and email=?", b.Email); err != nil {
 		return fmt.Errorf("Unable to set secret on ballot %#v to database", err)
 	}
 

@@ -69,7 +69,7 @@ func HPersonUpdate(c *gin.Context) {
 	}
 
 	// disallow duplicate emails
-	n, err := dbmap.SelectInt("select count(*) from person where email=$1 and person_id<>$2", json.Email, p.PersonID)
+	n, err := dbmap.SelectInt("select count(*) from person where email=? and person_id<>?", json.Email, p.PersonID)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to check person database for duplicate email")})
@@ -170,7 +170,7 @@ func HPersonInfo(c *gin.Context) {
 func HPersonDecisions(c *gin.Context) {
 	id := c.Param("person_id")
 	var decisions []Decision
-	_, err := dbmap.Select(&decisions, "select * from decision where person_id=$1", id)
+	_, err := dbmap.Select(&decisions, "select * from decision where person_id=?", id)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
@@ -192,7 +192,7 @@ func (p *Person) Destroy() error {
 
 	// Remove the person's decisions
 	var decisions []Decision
-	_, _ = dbmap.Select(&decisions, "SELECT * from decision WHERE person_id=$1", p.PersonID)
+	_, _ = dbmap.Select(&decisions, "SELECT * from decision WHERE person_id=?", p.PersonID)
 	for _, d := range decisions {
 		if err := d.Destroy(); err != nil {
 			return err
@@ -206,7 +206,7 @@ func (p *Person) Destroy() error {
 func (p *Person) Save() error {
 
 	// disallow duplicate emails
-	n, err := dbmap.SelectInt("select count(*) from person where email=$1", p.Email)
+	n, err := dbmap.SelectInt("select count(*) from person where email=?", p.Email)
 	if err != nil {
 		return fmt.Errorf("Unable to check person database for duplicate email")
 	}

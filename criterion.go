@@ -25,7 +25,7 @@ func HCriterionInfo(c *gin.Context) {
 	cid := c.Param("criterion_id")
 
 	var cri Criterion
-	err := dbmap.SelectOne(&cri, "select * from criterion where criterion_id=$1 and decision_id=$2", cid, did)
+	err := dbmap.SelectOne(&cri, "select * from criterion where criterion_id=? and decision_id=?", cid, did)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("criterion id %v for decision id %v not found", cid, did)})
 		return
@@ -102,7 +102,7 @@ func HCriterionUpdate(c *gin.Context) {
 	}
 
 	var cri Criterion
-	err = dbmap.SelectOne(&cri, "SELECT * FROM criterion WHERE decision_id=$1 and criterion_id=$2", did, cid)
+	err = dbmap.SelectOne(&cri, "SELECT * FROM criterion WHERE decision_id=? and criterion_id=?", did, cid)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("criterion %d for decision %d not found", cid, did)})
@@ -137,7 +137,7 @@ func HCriterionUpdate(c *gin.Context) {
 
 // Destroy removes a criterion from a decision
 func (cri *Criterion) Destroy() error {
-	_, err := dbmap.Exec("DELETE FROM criterion WHERE criterion_id=$1 and decision_id=$2",
+	_, err := dbmap.Exec("DELETE FROM criterion WHERE criterion_id=? and decision_id=?",
 		cri.CriterionID, cri.DecisionID)
 	if err != nil {
 		return fmt.Errorf("Unable to delete criterion %#v from database", cri)
@@ -146,7 +146,7 @@ func (cri *Criterion) Destroy() error {
 	// Remove the votes that have a vote for this destroied
 	// criterion and destroy them
 	var votes []Vote
-	_, _ = dbmap.Select(&votes, "select * from vote where criterion_id=$1", cri.CriterionID)
+	_, _ = dbmap.Select(&votes, "select * from vote where criterion_id=?", cri.CriterionID)
 	for _, vote := range votes {
 		if err := vote.Destroy(); err != nil {
 			return err
@@ -156,7 +156,7 @@ func (cri *Criterion) Destroy() error {
 	// Remove the ratings that have a rate for this destroied
 	// criterion and destroy them
 	var ratings []Rating
-	_, _ = dbmap.Select(&ratings, "select * from rating where criterion_id=$1", cri.CriterionID)
+	_, _ = dbmap.Select(&ratings, "select * from rating where criterion_id=?", cri.CriterionID)
 	for _, rating := range ratings {
 		if err := rating.Destroy(); err != nil {
 			return err

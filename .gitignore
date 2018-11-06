@@ -26,3 +26,6 @@ gobackend
 cookies.txt
 system.html
 system.out
+config.conf
+backend.log
+smtp.conf

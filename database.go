@@ -7,25 +7,24 @@ import (
 
 	"github.com/astaxie/beego/config"
 	"github.com/go-gorp/gorp"
-	_ "github.com/lib/pq"
+	_ "github.com/go-sql-driver/mysql"
 )
 
-// InitDatabase initalizes the postgres database
+// InitDatabase initalizes the mysql database
 // builds the schema of the table
 // forigen key restriction is not handled in here but they're
 // handled in each objects Save and Destroy methods
 func InitDatabase(conf config.Configer) *gorp.DbMap {
-	dbsrc := fmt.Sprintf("user=%s dbname=%s sslmode=%s password=%s",
+	dbsrc := fmt.Sprintf("%s:%s@/%s",
 		conf.String("database::user"),
-		conf.String("database::name"),
-		conf.String("database::sslmode"),
-		conf.String("database::password"))
+		conf.String("database::password"),
+		conf.String("database::name"))
 
-	db, err := sql.Open("postgres", dbsrc)
+	db, err := sql.Open("mysql", dbsrc)
 	if err != nil {
-		log.Fatalf("Unable to connect to postgres : %#v\n", err)
+		log.Fatalf("Unable to connect to mysql : %#v\n", err)
 	}
-	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.PostgresDialect{}}
+	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
 
 	dbmap.AddTableWithName(Person{}, "person").SetKeys(true, "person_id")
 	dbmap.AddTableWithName(Decision{}, "decision").SetKeys(true, "decision_id")
@@ -40,13 +39,13 @@ func InitDatabase(conf config.Configer) *gorp.DbMap {
 	}
 
 	// Always create an admin account
-	_, err = dbmap.Exec("DELETE FROM person WHERE person_id=0")
+	_, err = dbmap.Exec("DELETE FROM person WHERE person_id='0'")
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	hashed := HashPassword(conf.String("admin::password"))
-	_, err = dbmap.Exec("INSERT INTO person VALUES(0,$1,$2,$3,$4)",
+	_, err = dbmap.Exec("INSERT INTO person VALUES('0',?,?,?,?)",
 		conf.String("admin::email"),
 		hashed,
 		conf.String("admin::name_first"),

@@ -30,7 +30,7 @@ type Decision struct {
 func HDecisionBallotsList(c *gin.Context) {
 	did := c.Param("decision_id")
 	var ballots []Ballot
-	_, err := dbmap.Select(&ballots, "SELECT * FROM ballot WHERE decision_id=$1", did)
+	_, err := dbmap.Select(&ballots, "SELECT * FROM ballot WHERE decision_id=?", did)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("Unable to find ballots for decision id %v", did)})
 		return
@@ -45,14 +45,14 @@ func HDecisionBallotsList(c *gin.Context) {
     ai.Sent = b.Sent
 		ai.URLDecision = fmt.Sprintf("/decision/%s/ballot/%d", did, b.BallotID)
 		// Get the votes for this ballot
-		_, err = dbmap.Select(&ai.Votes, "SELECT * FROM vote where ballot_id=$1", b.BallotID)
+		_, err = dbmap.Select(&ai.Votes, "SELECT * FROM vote where ballot_id=?", b.BallotID)
 		if err != nil {
 			c.JSON(http.StatusForbidden,
 				gin.H{"error": fmt.Sprintf("Unable to find votes for ballot %v", b.BallotID)})
 			return
 		}
 		// Get the ratings for this ballot
-		_, err = dbmap.Select(&ai.Ratings, "SELECT * FROM rating where ballot_id=$1", b.BallotID)
+		_, err = dbmap.Select(&ai.Ratings, "SELECT * FROM rating where ballot_id=?", b.BallotID)
 		if err != nil {
 			c.JSON(http.StatusForbidden,
 				gin.H{"error": fmt.Sprintf("Unable to find votes for ballot %v", b.BallotID)})
@@ -70,7 +70,7 @@ func HDecisionBallotsList(c *gin.Context) {
 func HDecisionAlternativesList(c *gin.Context) {
 	did := c.Param("decision_id")
 	var alts []Alternative
-	_, err := dbmap.Select(&alts, "SELECT * FROM alternative WHERE decision_id=$1 ORDER BY \"order\", \"name\" ASC", did)
+	_, err := dbmap.Select(&alts, "SELECT * FROM alternative WHERE decision_id=? ORDER BY \"order\", \"name\" ASC", did)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to find alternatives for decision id %s", did)})
@@ -86,7 +86,7 @@ func HDecisionAlternativesList(c *gin.Context) {
 func HDecisionCriterionsList(c *gin.Context) {
 	did := c.Param("decision_id")
 	var cris []Criterion
-	_, err := dbmap.Select(&cris, "SELECT * FROM criterion WHERE decision_id=$1 ORDER BY \"order\", \"name\" ASC", did)
+	_, err := dbmap.Select(&cris, "SELECT * FROM criterion WHERE decision_id=? ORDER BY \"order\", \"name\" ASC", did)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to find criterion for decision %s", did)})
@@ -112,9 +112,9 @@ func HDecisionDuplicate(c *gin.Context) {
 	}
 	dsrc := dobj.(*Decision)
 	var cris []Criterion
-	_, _ = dbmap.Select(&cris, "select * from criterion where decision_id=$1", dsrc.DecisionID)
+	_, _ = dbmap.Select(&cris, "select * from criterion where decision_id=?", dsrc.DecisionID)
 	var alts []Alternative
-	_, _ = dbmap.Select(&alts, "select * from alternative where decision_id=$1", dsrc.DecisionID)
+	_, _ = dbmap.Select(&alts, "select * from alternative where decision_id=?", dsrc.DecisionID)
 
 	// This is auto incr we need to inset and
 	// determine its new value
@@ -126,7 +126,7 @@ func HDecisionDuplicate(c *gin.Context) {
 	}
 	// Get the new auto incr id
 	if err := dbmap.SelectOne(dsrc,
-		"select * from decision where decision_id=(select max(decision_id) from decision) and person_id=$1 and name=$2",
+		"select * from decision where decision_id=(select max(decision_id) from decision) and person_id=? and name=?",
 		dsrc.PersonID, dsrc.Name); err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": "Unable to get duplicated decision"})
@@ -186,7 +186,7 @@ func HDecisionsList(c *gin.Context) {
 func HDecisionInfo(c *gin.Context) {
 	did := c.Param("decision_id")
 	var decision Decision
-	err := dbmap.SelectOne(&decision, "SELECT * FROM decision where decision_id=$1", did)
+	err := dbmap.SelectOne(&decision, "SELECT * FROM decision where decision_id=?", did)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("Unable to find decisions with id %v", did)})
 		return
@@ -205,7 +205,7 @@ func HDecisionUpdate(c *gin.Context) {
 	}
 
 	var d Decision
-	err = dbmap.SelectOne(&d, "SELECT * FROM decision WHERE decision_id=$1", did)
+	err = dbmap.SelectOne(&d, "SELECT * FROM decision WHERE decision_id=?", did)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("decision %d not found", did)})
@@ -298,7 +298,7 @@ func (d *Decision) Destroy() error {
 	// Remove the ballots of this decision
 	// removes the votes
 	var ballots []Ballot
-	_, _ = dbmap.Select(&ballots, "SELECT * FROM ballot WHERE decision_id=$1", d.DecisionID)
+	_, _ = dbmap.Select(&ballots, "SELECT * FROM ballot WHERE decision_id=?", d.DecisionID)
 	for _, b := range ballots {
 		err := b.Destroy()
 		if err != nil {
@@ -309,7 +309,7 @@ func (d *Decision) Destroy() error {
 	// Remove criterions
 	// Does not remove anything..
 	var cris []Criterion
-	_, _ = dbmap.Select(&cris, "select * from criterion where decision_id=$1", d.DecisionID)
+	_, _ = dbmap.Select(&cris, "select * from criterion where decision_id=?", d.DecisionID)
 	for _, cri := range cris {
 		err := cri.Destroy()
 		if err != nil {
@@ -319,7 +319,7 @@ func (d *Decision) Destroy() error {
 
 	// Removing the alternatives remove the votes related to it
 	var alts []Alternative
-	_, _ = dbmap.Select(&alts, "select * from alternative where decision_id=$1", d.DecisionID)
+	_, _ = dbmap.Select(&alts, "select * from alternative where decision_id=?", d.DecisionID)
 	for _, alt := range alts {
 		err := alt.Destroy()
 		if err != nil {
@@ -338,14 +338,14 @@ func (d *Decision) Save() error {
 	// See if there's a person that this decision belongs to
 	// otherwise we quit
 	var p Person
-	err := dbmap.SelectOne(&p, "SELECT * FROM person WHERE person_id=$1", d.PersonID)
+	err := dbmap.SelectOne(&p, "SELECT * FROM person WHERE person_id=?", d.PersonID)
 	if err != nil {
 		return fmt.Errorf("person %d does not exist, can't create a decision without an owner", d.PersonID)
 	}
 
 	// Check ownership of decisions
 	var ds []Decision
-	_, _ = dbmap.Select(&ds, "select * from decision where decision_id=$1", d.DecisionID)
+	_, _ = dbmap.Select(&ds, "select * from decision where decision_id=?", d.DecisionID)
 	for _, i := range ds {
 		if i.PersonID != d.PersonID {
 			return fmt.Errorf("decision %d already owned by person %d", d.DecisionID, i.PersonID)

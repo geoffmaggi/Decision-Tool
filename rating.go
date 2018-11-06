@@ -39,7 +39,7 @@ func HRatingCreate(c *gin.Context) {
 	}
 
 	var b Ballot
-	err = dbmap.SelectOne(&b, "select * from ballot where ballot_id=$1", bid)
+	err = dbmap.SelectOne(&b, "select * from ballot where ballot_id=?", bid)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
@@ -70,7 +70,7 @@ func HRatingBallots(c *gin.Context) {
 	}
 
 	var rs []Rating
-	_, err = dbmap.Select(&rs, "select * from rating WHERE criterion_id=$1",
+	_, err = dbmap.Select(&rs, "select * from rating WHERE criterion_id=?",
 		cid)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
@@ -128,14 +128,14 @@ func HRatingUpdate(c *gin.Context) {
 
 	var cri Criterion
 	err = dbmap.SelectOne(&cri,
-		"SELECT * FROM criterion WHERE criterion_id=$1", cid)
+		"SELECT * FROM criterion WHERE criterion_id=?", cid)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to update rating for ballot %d and criterion %d", bid, cid)})
 		return
 	}
 
-	_, err = dbmap.Exec("UPDATE rating SET rating=$1 WHERE ballot_id=$2 and criterion_id=$3", rating, bid, cid)
+	_, err = dbmap.Exec("UPDATE rating SET rating=? WHERE ballot_id=? and criterion_id=?", rating, bid, cid)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to update rating for ballot %d and criterion %d", bid, cid)})
@@ -151,19 +151,19 @@ func HRatingUpdate(c *gin.Context) {
 func (w *Rating) Save() error {
 
 	// No duplicate ratings
-	n, _ := dbmap.SelectInt("select count(*) from rating where ballot_id=$1 and criterion_id=$2", w.BallotID, w.CriterionID)
+	n, _ := dbmap.SelectInt("select count(*) from rating where ballot_id=? and criterion_id=?", w.BallotID, w.CriterionID)
 	if n >= 1 {
 		return fmt.Errorf("rating %#v already exists", w)
 	}
 
 	var b Ballot
-	err := dbmap.SelectOne(&b, "select * from ballot where ballot_id=$1", w.BallotID)
+	err := dbmap.SelectOne(&b, "select * from ballot where ballot_id=?", w.BallotID)
 	if err != nil {
 		return fmt.Errorf("ballot %d does not exists, can't create a rating without an owner", w.BallotID)
 	}
 
 	var cri Criterion
-	err = dbmap.SelectOne(&cri, "select * from criterion where criterion_id=$1", w.CriterionID)
+	err = dbmap.SelectOne(&cri, "select * from criterion where criterion_id=?", w.CriterionID)
 	if err != nil {
 		return fmt.Errorf("criterion %d does not exists, can't create a vote that doesn't belong to a criterion",
 			w.CriterionID)
@@ -183,7 +183,7 @@ func (w *Rating) Save() error {
 
 // Destroy removes a rating from the database
 func (w *Rating) Destroy() error {
-	_, err := dbmap.Exec("DELETE FROM rating WHERE ballot_id=$1 and criterion_id=$2",
+	_, err := dbmap.Exec("DELETE FROM rating WHERE ballot_id=? and criterion_id=?",
 		w.BallotID, w.CriterionID)
 	if err != nil {
 		return err

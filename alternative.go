@@ -72,7 +72,7 @@ func HAlternativeUpdate(c *gin.Context) {
 	}
 
 	var alt Alternative
-	err = dbmap.SelectOne(&alt, "SELECT * FROM alternative WHERE decision_id=$1 and alternative_id=$2", did, aid)
+	err = dbmap.SelectOne(&alt, "SELECT * FROM alternative WHERE decision_id=? and alternative_id=?", did, aid)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("alternative %d for decision %d not found", aid, did)})
@@ -140,7 +140,7 @@ func HAlternativeInfo(c *gin.Context) {
 	did := c.Param("decision_id")
 	aid := c.Param("alternative_id")
 	var alt Alternative
-	err := dbmap.SelectOne(&alt, "SELECT * FROM alternative where alternative_id=$1 and decision_id=$2", aid, did)
+	err := dbmap.SelectOne(&alt, "SELECT * FROM alternative where alternative_id=? and decision_id=?", aid, did)
 	if err != nil {
 		c.JSON(http.StatusForbidden,
 			gin.H{"error": fmt.Sprintf("Unable to find alternative %v for decision %v", aid, did)})
@@ -159,7 +159,7 @@ func (alt *Alternative) Destroy() error {
 
 	// Remove votes beloning to this alternative
 	var votes []Vote
-	_, _ = dbmap.Select(&votes, "SELECT * FROM vote WHERE alternative_id=$1", alt.AlternativeID)
+	_, _ = dbmap.Select(&votes, "SELECT * FROM vote WHERE alternative_id=?", alt.AlternativeID)
 	for _, v := range votes {
 		if err := v.Destroy(); err != nil {
 			return err
