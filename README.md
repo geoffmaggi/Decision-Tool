@@ -1,21 +1,23 @@
-# Backend
+# Dependencies
 
-This is the backend written in [Golang](http://golang.org). This verison is
-almost complete. It's almost same as our initial design. I will explain briefly
-explain how the api works. There are also javascript examples written in
-`webtest/` to show how to do various things.
+ - [Golang](http://golang.org)
+ - [MySql](https://www.mysql.com/), [MariaDB](https://mariadb.org/) or [Postgres](https://www.postgresql.org/)
 
 # Installing and building
 
-First make sure go is installed and configured then type
+First make sure go is installed and configured
 
-`go get`
+Edit \_config.conf and save it as config.conf
+Edit \_smtp.conf and save it as smtp.conf
 
-to get the dependencies
-
+Run the following
 ```
+# Get Dependencies
+go get
+# Build the project
 go build
-./gobackend
+# Run the code
+./Decision_Tool
 ```
 
 # Code documentation, and testing
