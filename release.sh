@@ -25,7 +25,7 @@ fi
 echo "[+] Building and copying files"
 mkdir release/ 2>&1 > /dev/null
 GIN_MODE=release go build
-mv gobackend release/
+mv Decision-Tool release/
 cd release/
 cp -rf ../templates .
 cp -rf ../static .

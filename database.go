@@ -24,7 +24,7 @@ func InitDatabase(conf config.Configer) *gorp.DbMap {
 	if err != nil {
 		log.Fatalf("Unable to connect to mysql : %#v\n", err)
 	}
-	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
+	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{Engine: "InnoDB", Encoding: "UTF8"}}
 
 	dbmap.AddTableWithName(Person{}, "person").SetKeys(true, "person_id")
 	dbmap.AddTableWithName(Decision{}, "decision").SetKeys(true, "decision_id")

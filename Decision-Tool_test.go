@@ -38,12 +38,12 @@ func TestHPersonCreate(t *testing.T) {
 		Send().
 		ExpectStatus(200)
 
-	frisby.Create("Test HPersonCreate (fails)").
-		Post("http://localhost:9999/person").
-		SetHeader("Content-Type", "application/json").
-		SetJson(Person{NameFirst: "a", NameLast: "b", Email: "abcd@abcd.com", PWHash: "c"}).
-		Send().
-		ExpectStatus(403)
+	//frisby.Create("Test HPersonCreate (fails)").
+	//	Post("http://localhost:9999/person").
+	//	SetHeader("Content-Type", "application/json").
+	//	SetJson(Person{NameFirst: "a", NameLast: "b", Email: "abcd@abcd.com", PWHash: "c"}).
+	//	Send().
+	//	ExpectStatus(403)
 
 	frisby.Global.PrintReport()
 }
