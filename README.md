@@ -5,10 +5,9 @@
 
 # Installing and building
 
-First make sure go is installed and configured
-
-Edit \_config.conf and save it as config.conf
-Edit \_smtp.conf and save it as smtp.conf
+1. First make sure go is installed and configured
+2. Edit \_config.conf and save it as **config.conf**
+3. Edit \_smtp.conf and save it as **smtp.conf**
 
 Run the following
 ```
