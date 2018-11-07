@@ -26,18 +26,18 @@ go build
 
 ## Testing
 
-To test the code just run following 
+To test the code run the following 
 
 ```
 ./run_tests.sh
 ```
 
-This will run all tests and ouput the file "system.html" which can be viewed in the browser to see code coverage.
+This will initiate the test suite and ouput the file "system.html" which can be viewed in the browser to see code coverage.
 
 ## Deploying
 
 1. Alter deploy_regex.sh to point to the correct web address
-2. Run the following to produce a zipped file with minified static files, a compiled binary and the configuration files
+2. Run the following to produce a zipped folder with minified static files and a compiled binary
 ```
 ./release.sh
 ```
