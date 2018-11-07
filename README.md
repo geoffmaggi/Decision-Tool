@@ -42,13 +42,12 @@ This command will run all testing and create a system.html file that can be prev
 
 ## Deploying
 
-Run the following to produce a zipped file with minified CSS, JS, a compiled binary and the configuration files.
-
+1. Alter deploy_regex.sh to point to the correct web address
+2. Run the following to produce a zipped file with minified CSS, JS, a compiled binary and the configuration files.
 ```
 ./release.sh
 ```
-
-Copy the contents of the zip onto the production server and run the executable.
+3. Copy the contents of the zip onto the production server and run the executable.
 
 # API
 
