@@ -216,7 +216,7 @@ function buildHome() {
 
     '<div class="jumbotron">',
     '<h2>Welcome to the Decision Dashboard</h2>',
-    '<img src="http://blog.rameshganapathy.com/wp-content/uploads/2014/03/calvin-knowledge-is-paralyzing.gif" alt="Comic"/>',
+    '<img src="../static/images/calvin.gif" alt="Comic"/>',
     '</div>',
     '<hr>',
     '<div class= "panel panel-default">',
