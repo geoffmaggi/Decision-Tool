@@ -29,8 +29,8 @@ mv Decision-Tool release/
 cd release/
 cp -rf ../templates .
 cp -rf ../static .
-cp ../config.conf .
-cp ../smtp.conf .
+cp ../_config.conf .
+cp ../_smtp.conf .
 
 # Minify all js
 echo "[+] Minify js files"
