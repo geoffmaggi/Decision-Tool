@@ -23,31 +23,25 @@ go build
 ./Decision_Tool
 ```
 
-## Code documentation, and testing
+## Testing
 
-Run
-
-```
-godoc -http=localhost:6969
-```
-
-open the link in a browser find gobackend package and read the documentation.
-To test the code just run the following 
+To test the code just run following 
 
 ```
 ./run_tests.sh
 ```
 
-This command will run all testing and create a system.html file that can be previewed in the browser, to see which code is covered.
+This will run all tests and ouput the file "system.html" which can be viewed in the browser to see code coverage.
 
 ## Deploying
 
-1. Alter deploy_regex.sh to point to the correct web address
-2. Run the following to produce a zipped file with minified CSS, JS, a compiled binary and the configuration files.
+1. Alter deploy_regex.sh to point to the correct web address.
+2. Run the following to produce a zipped file with minified static files, a compiled binary and the configuration files.
 ```
 ./release.sh
 ```
-3. Copy the contents of the zip onto the production server and run the executable.
+3. Copy the contents of the zip onto the production server and update the configuration files.
+4. Run the binary to initialize the server.
 
 # API
 
