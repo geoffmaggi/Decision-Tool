@@ -9,7 +9,7 @@ The Decision Tool is a secure, cross-platform and concurrent full stack web appl
 
 ## Installing and building
 
-1. First make sure go is installed and configured
+1. Install and configure Go and your Database of choice
 2. Edit \_config.conf and save it as **config.conf**
 3. Edit \_smtp.conf and save it as **smtp.conf**
 
@@ -22,6 +22,7 @@ go build
 # Run the code
 ./Decision_Tool
 ```
+4. Visit localhost:9999 in your browser
 
 ## Testing
 
@@ -35,13 +36,13 @@ This will run all tests and ouput the file "system.html" which can be viewed in 
 
 ## Deploying
 
-1. Alter deploy_regex.sh to point to the correct web address.
-2. Run the following to produce a zipped file with minified static files, a compiled binary and the configuration files.
+1. Alter deploy_regex.sh to point to the correct web address
+2. Run the following to produce a zipped file with minified static files, a compiled binary and the configuration files
 ```
 ./release.sh
 ```
-3. Copy the contents of the zip onto the production server and update the configuration files.
-4. Run the binary to initialize the server.
+3. Copy the contents of the zip onto the production server and update the configuration files
+4. Run the binary to initialize the server
 
 # API
 
