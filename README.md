@@ -1,9 +1,11 @@
-# Dependencies
+The Decision Tool is a secure, cross-platform, concurrent, full stack web app to aid in the decision making processes.
+
+## Dependencies
 
  - [Golang](http://golang.org)
  - [MySql](https://www.mysql.com/), [MariaDB](https://mariadb.org/) or [Postgres](https://www.postgresql.org/)
 
-# Installing and building
+## Installing and building
 
 1. First make sure go is installed and configured
 2. Edit \_config.conf and save it as **config.conf**
@@ -19,7 +21,7 @@ go build
 ./Decision_Tool
 ```
 
-# Code documentation, and testing
+## Code documentation, and testing
 
 Run
 
@@ -34,26 +36,17 @@ To test the code just run the following
 ./run_tests.sh
 ```
 
-This command will run all testing and create a system.html file that can be
-previewed a the browser, to see which code is covered.
+This command will run all testing and create a system.html file that can be previewed in the browser, to see which code is covered.
 
+## Deploying
 
-# Pages
-
-As defined in main.go 
+Run the following to produce a zipped file with minified CSS, JS, a compiled binary and the configuration files.
 
 ```
-	// Roots of pages for the frontend
-	/////////////////////////
-	routes.GET("/", HRootHome)
-	routes.GET("/login.html", HRootLogin)
-	routes.GET("/logout.html", HRootLogout)
-	routes.GET("/ballot.html", HRootBallot)
-	routes.GET("/decision/:decision_id", HRootDecision)
+./release.sh
 ```
 
-These are the only pages required to change, no html nothing. Those pages are
-found in `static/page_*.js` :)
+Copy the contents of the zip onto the production server and run the executable.
 
 # API
 
@@ -230,12 +223,3 @@ listed in here is considered to have a `None` permission.
 | Vt. Update        |                          |                |
 | Rt. Delete        |                          |                |
 | Rt. Update        |                          |                |
-
-
-# Features
-
-- Cross-platform
-- Fully concurrent
-- SecureCookie Authentication
-- Logging
-- ...
