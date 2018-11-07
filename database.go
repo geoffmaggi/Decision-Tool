@@ -10,7 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// InitDatabase initalizes the mysql database
+// InitDatabase initializes the mysql database
 // builds the schema of the table
 // forigen key restriction is not handled in here but they're
 // handled in each objects Save and Destroy methods
