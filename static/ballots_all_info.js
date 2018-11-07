@@ -1,5 +1,4 @@
-function main(body)
-{
+function main(body) {
     $('title')
         .html('title goes here');
 
