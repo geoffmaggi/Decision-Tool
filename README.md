@@ -1,6 +1,6 @@
 # Decision Tool ![Version](https://img.shields.io/badge/version-1.1.0-blue.svg) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Go Report Card](https://goreportcard.com/badge/github.com/geoffmaggi/Decision-Tool)](https://goreportcard.com/report/github.com/geoffmaggi/Decision-Tool) [![Travis CI](https://travis-ci.org/geoffmaggi/Decision-Tool.svg?branch=master)](https://travis-ci.org/geoffmaggi/Decision-Tool#) ![Tests](https://img.shields.io/badge/tests-128%2F128-brightgreen.svg)
 
-The Decision Tool is a secure, cross-platform, concurrent, full stack web app to aid in the decision making processes.
+The Decision Tool is a secure, cross-platform and concurrent full stack web application to aid in the decision making process.
 
 ## Dependencies
 
