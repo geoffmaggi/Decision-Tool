@@ -924,7 +924,7 @@ func TestHRoots(t *testing.T) {
 		ExpectStatus(200)
 
 	frisby.Create("Test HRoot").
-		Get(fmt.Sprintf("http://localhost:9999/results.html")).
+		Get(fmt.Sprintf("http://localhost:9999/results/0")).
 		SetHeader("Accept", "text/html").
 		Send().
 		ExpectStatus(200)

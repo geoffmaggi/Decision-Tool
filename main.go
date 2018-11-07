@@ -66,30 +66,56 @@ func main() {
 
 	// Person
 	////////////////
-	routes.POST("/person", ginAuth.Use, AuthAsAdmin, HPersonCreate)
-	routes.GET("/persons", HPersonsList)
-	routes.GET("/person/:person_id/info", HPersonInfo)
-	routes.GET("/person/:person_id/decisions", HPersonDecisions)
-	routes.DELETE("/person/:person_id", ginAuth.Use, AuthAsAdmin, HPersonDelete)
-	routes.PUT("/person/:person_id", ginAuth.Use, AuthAsAll, HPersonUpdate)
+	if gin.Mode() == "debug" {
+		routes.POST("/person", HPersonCreate)
+		routes.GET("/persons", HPersonsList)
+		routes.GET("/person/:person_id/info", HPersonInfo)
+		routes.GET("/person/:person_id/decisions", HPersonDecisions)
+		routes.DELETE("/person/:person_id", HPersonDelete)
+		routes.PUT("/person/:person_id", HPersonUpdate)
+	} else {
+		routes.POST("/person", ginAuth.Use, AuthAsAdmin, HPersonCreate)
+		routes.GET("/persons", HPersonsList)
+		routes.GET("/person/:person_id/info", HPersonInfo)
+		routes.GET("/person/:person_id/decisions", HPersonDecisions)
+		routes.DELETE("/person/:person_id", ginAuth.Use, AuthAsAdmin, HPersonDelete)
+		routes.PUT("/person/:person_id", ginAuth.Use, AuthAsAll, HPersonUpdate)
+	}
 
 	// Decision
 	////////////////
 
 	// decision homes
-	routes.POST("/decision", ginAuth.Use, AuthAsAll, HDecisionCreate)
-	routes.GET("/decision/:decision_id/duplicate", ginAuth.Use, AuthAsAll, HDecisionDuplicate)
-	routes.GET("/decisions", HDecisionsList)
-	routes.GET("/decision/:decision_id/info", HDecisionInfo)
-	routes.DELETE("/decision/:decision_id", ginAuth.Use, AuthAsAll, HDecisionDelete)
-	routes.PUT("/decision/:decision_id", ginAuth.Use, AuthAsAll, HDecisionUpdate)
+	if gin.Mode() == "debug" {
+		routes.POST("/decision", HDecisionCreate)
+		routes.GET("/decision/:decision_id/duplicate", HDecisionDuplicate)
+		routes.GET("/decisions", HDecisionsList)
+		routes.GET("/decision/:decision_id/info", HDecisionInfo)
+		routes.DELETE("/decision/:decision_id", HDecisionDelete)
+		routes.PUT("/decision/:decision_id", HDecisionUpdate)
+	} else {
+		routes.POST("/decision", ginAuth.Use, AuthAsAll, HDecisionCreate)
+		routes.GET("/decision/:decision_id/duplicate", ginAuth.Use, AuthAsAll, HDecisionDuplicate)
+		routes.GET("/decisions", HDecisionsList)
+		routes.GET("/decision/:decision_id/info", HDecisionInfo)
+		routes.DELETE("/decision/:decision_id", ginAuth.Use, AuthAsAll, HDecisionDelete)
+		routes.PUT("/decision/:decision_id", ginAuth.Use, AuthAsAll, HDecisionUpdate)
+	}
 
 	// decision's alternatives
-	routes.POST("/decision/:decision_id/alternative", ginAuth.Use, AuthAsAll, HAlternativeCreate)
-	routes.GET("/decision/:decision_id/alternatives", HDecisionAlternativesList)
-	routes.GET("/decision/:decision_id/alternative/:alternative_id/info", HAlternativeInfo)
-	routes.DELETE("/decision/:decision_id/alternative/:alternative_id", ginAuth.Use, AuthAsAll, HAlternativeDelete)
-	routes.PUT("/decision/:decision_id/alternative/:alternative_id", ginAuth.Use, AuthAsAll, HAlternativeUpdate)
+	if gin.Mode() == "debug" {
+		routes.POST("/decision/:decision_id/alternative", HAlternativeCreate)
+		routes.GET("/decision/:decision_id/alternatives", HDecisionAlternativesList)
+		routes.GET("/decision/:decision_id/alternative/:alternative_id/info", HAlternativeInfo)
+		routes.DELETE("/decision/:decision_id/alternative/:alternative_id", HAlternativeDelete)
+		routes.PUT("/decision/:decision_id/alternative/:alternative_id", HAlternativeUpdate)
+	} else {
+		routes.POST("/decision/:decision_id/alternative", ginAuth.Use, AuthAsAll, HAlternativeCreate)
+		routes.GET("/decision/:decision_id/alternatives", HDecisionAlternativesList)
+		routes.GET("/decision/:decision_id/alternative/:alternative_id/info", HAlternativeInfo)
+		routes.DELETE("/decision/:decision_id/alternative/:alternative_id", ginAuth.Use, AuthAsAll, HAlternativeDelete)
+		routes.PUT("/decision/:decision_id/alternative/:alternative_id", ginAuth.Use, AuthAsAll, HAlternativeUpdate)
+	}
 
 	// decision's ballots
 	routes.GET("/decision/:decision_id/ballot/:ballot_id", HBallotAllInfo)
@@ -139,7 +165,11 @@ func main() {
 	// Login/Logout
 	routes.POST("/login", HAuthLogin)
 	routes.GET("/logout", HAuthLogout)
-	routes.GET("/whoami", ginAuth.Use, AuthAsAll, HAuthWhoAmI)
+	if gin.Mode() == "debug" {
+		routes.GET("/whoami", HAuthWhoAmI)
+	} else {
+		routes.GET("/whoami", ginAuth.Use, AuthAsAll, HAuthWhoAmI)
+	}
 
 	// Setup the authentication
 	ginAuth.ConfigPath = "./config.conf"
