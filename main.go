@@ -33,7 +33,7 @@ func main() {
 
 	// Debug Mode only clean route
 	// used for testing purposes
-	if gin.Mode() == "debug" {
+	if gin.Mode() == "test" {
 		routes.GET("/clean", func(c *gin.Context) {
 			err := dbmap.TruncateTables()
 			if err != nil {
@@ -66,7 +66,7 @@ func main() {
 
 	// Person
 	////////////////
-	if gin.Mode() == "debug" {
+	if gin.Mode() == "test" {
 		routes.POST("/person", HPersonCreate)
 		routes.GET("/persons", HPersonsList)
 		routes.GET("/person/:person_id/info", HPersonInfo)
@@ -86,7 +86,7 @@ func main() {
 	////////////////
 
 	// decision homes
-	if gin.Mode() == "debug" {
+	if gin.Mode() == "test" {
 		routes.POST("/decision", HDecisionCreate)
 		routes.GET("/decision/:decision_id/duplicate", HDecisionDuplicate)
 		routes.GET("/decisions", HDecisionsList)
@@ -103,7 +103,7 @@ func main() {
 	}
 
 	// decision's alternatives
-	if gin.Mode() == "debug" {
+	if gin.Mode() == "test" {
 		routes.POST("/decision/:decision_id/alternative", HAlternativeCreate)
 		routes.GET("/decision/:decision_id/alternatives", HDecisionAlternativesList)
 		routes.GET("/decision/:decision_id/alternative/:alternative_id/info", HAlternativeInfo)
@@ -165,7 +165,8 @@ func main() {
 	// Login/Logout
 	routes.POST("/login", HAuthLogin)
 	routes.GET("/logout", HAuthLogout)
-	if gin.Mode() == "debug" {
+
+	if gin.Mode() == "test" {
 		routes.GET("/whoami", HAuthWhoAmI)
 	} else {
 		routes.GET("/whoami", ginAuth.Use, AuthAsAll, HAuthWhoAmI)
